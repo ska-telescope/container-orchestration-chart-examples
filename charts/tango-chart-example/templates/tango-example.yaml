@@ -1,0 +1,43 @@
+{{ if .Values.tangoexample.enabled }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tango-example-{{ template "tango-chart-example.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: tango-example-{{ template "tango-chart-example.name" . }}
+    app.kubernetes.io/instance: "{{ .Release.Name }}"
+    app.kubernetes.io/managed-by: "{{ .Release.Service }}"
+    helm.sh/chart: "{{ template "tango-chart-example.chart" . }}"
+spec:
+  containers:
+  - name: tango-example
+    image: "{{ .Values.tangoexample.image.registry }}/{{ .Values.tangoexample.image.image }}:{{ .Values.tangoexample.image.tag }}"
+    imagePullPolicy: {{ .Values.tangoexample.image.pullPolicy }}
+    command:
+      - sh
+    args:
+      - -c
+      - "tango_admin --check-device test/power_supply/1 || tango_admin --add-server PowerSupply/test PowerSupply test/power_supply/1 && /venv/bin/python /app/powersupply/powersupply.py test"
+    env:
+    - name: TANGO_HOST
+      value: databaseds-{{ template "tango-chart-example.name" . }}-{{ .Release.Name }}:10000
+{{- with .Values.tangoexample.env }}
+{{ toYaml . | indent 4 }}
+{{- end }}
+  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}
