@@ -15,6 +15,7 @@ spec:
   type: ClusterIP
   ports:
   - name: rest
+    protocol: TCP
     port: 80
     targetPort: rest
   selector:
@@ -61,6 +62,7 @@ spec:
         ports:
         - name: rest
           containerPort: 8080
+          protocol: TCP
       restartPolicy: Always
 {{- with .Values.nodeSelector }}
       nodeSelector:

@@ -14,6 +14,7 @@ metadata:
 spec:
   ports:
   - name: mysql
+    protocol: TCP
     port: 3306
   clusterIP: None
   selector:
@@ -63,6 +64,7 @@ spec:
         ports:
         - name: mysql
           containerPort: 3306
+          protocol: TCP
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
